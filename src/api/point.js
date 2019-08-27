@@ -1,92 +1,93 @@
-export function Point(x, y) {
-    this.X = x;
-    this.Y = y;
-    this.Equals = function (b) {
-        return Math.abs(this.X - b.X) < 0.000001 && Math.abs(this.Y - b.Y) < 0.000001;
+// gis库中点相关操作封装
+export function Point(x,y) {
+    this.x = x;
+    this.y = y;
+    this.equals = function (b) {
+        return Math.abs(this.x - b.x) < 0.000001 && Math.abs(this.y - b.y) < 0.000001;
     }
 
     //返回两点之间的距离
-    this.Distance = function (b) {
-        dx = this.X - b.X;
-        dy = this.Y - b.Y;
+    this.distance = function (b) {
+        var dx = this.x - b.x;
+        var dy = this.y - b.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
 
     //离线段[a-b]距离最短的点和最短距离
-    this.MinDistancePoint = function (a, b) {
+    this.minDistancePoint = function (a, b) {
         var minDistPoint;
         var minDist;
-        t = ((a.Y - this.Y) * (b.Y - a.Y) - (a.X - this.X) * (a.X - b.X)) / ((a.X - b.X) * (a.X - b.X) - (a.Y - b.Y) * (b.Y - a.Y));
-        x = (a.X - b.X) * t + a.X;
-        y = (a.Y - b.Y) * t + a.Y;
+        var t = ((a.y - this.y) * (b.y - a.y) - (a.x - this.x) * (a.x - b.x)) / ((a.x - b.x) * (a.x - b.x) - (a.y - b.y) * (b.y - a.y));
+        var x = (a.x - b.x) * t + a.x;
+        var y = (a.y - b.y) * t + a.y;
         //理论最短距离点
         minDistPoint = new Point(x, y);
 
         //超出线段范围，没有在a-b上的垂直点,则最短距离为a or b
-        if (minDistPoint.X > Math.max(a.X, b.X)
-            || minDistPoint.X < Math.min(a.X, b.X)
-            || minDistPoint.Y > Math.max(a.Y, b.Y)
-            || minDistPoint.Y < Math.min(a.Y, b.Y)) {
-            if (a.Distance(this) < b.Distance(this)) {
+        if (minDistPoint.x > Math.max(a.x, b.x)
+            || minDistPoint.x < Math.min(a.x, b.x)
+            || minDistPoint.y > Math.max(a.y, b.y)
+            || minDistPoint.y < Math.min(a.y, b.y)) {
+            if (a.distance(this) < b.distance(this)) {
                 minDistPoint = a;
             } else {
                 minDistPoint = b;
             }
         }
-        minDist = this.Distance(minDistPoint);
+        minDist = this.distance(minDistPoint);
         return minDistPoint, minDist;
     }
 
     // 到线段最短距离
-    this.DistanceFromSegment = function (A, B) {
-        if (A.X == B.X && A.Y == B.Y) {
-            return this.Distance(A);
+    this.distanceFromSegment = function (A, B) {
+        if (A.x == B.x && A.y == B.y) {
+            return this.distance(A);
         }
-        len2 = (B.X - A.X) * (B.X - A.X) + (B.Y - A.Y) * (B.Y - A.Y)
-        r = ((this.X - A.X) * (B.X - A.X) + (this.Y - A.Y) * (B.Y - A.Y)) / len2;
+        var len2 = (B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y)
+        var r = ((this.x - A.x) * (B.x - A.x) + (this.y - A.y) * (B.y - A.y)) / len2;
 
         if (r <= 0.0) {
-            return this.Distance(A);
+            return this.distance(A);
         }
         if (r >= 1.0) {
-            return this.Distance(B);
+            return this.distance(B);
         }
-        s = ((A.Y - this.Y) * (B.X - A.X) - (A.X - this.X) * (B.Y - A.Y)) / len2;
+        var s = ((A.y - this.y) * (B.x - A.x) - (A.x - this.x) * (B.y - A.y)) / len2;
         return Math.abs(s) * Math.sqrt(len2);
     }
 
     // 在线段A-B的投影点
-    this.ProjectPoint = function (A, B) {
+    this.projectPoint = function (A, B) {
         if (this === A || this === B) {
             return this;
         }
-        r = this.ProjectionFactor(A, B);
-        return new Point(A.X + r * (B.X - A.X), A.Y + r * (B.Y - A.Y));
+        var r = this.projectionFactor(A, B);
+        return new Point(A.x + r * (B.x - A.x), A.y + r * (B.y - A.y));
     }
 
     // 求点在线段上的投影影子
-    this.ProjectionFactor = function (A, B) {
+    this.projectionFactor = function (A, B) {
         if (this === A) {
             return 0.0;
         }
         if (this === B) {
             return 1.0;
         }
-        dx = B.X - A.X;
-        dy = B.Y - A.Y;
-        len = dx * dx + dy * dy;
-        r = ((this.X - A.X) * dx + (this.Y - A.Y) * dy) / len;
+        var dx = B.x - A.x;
+        var dy = B.y - A.y;
+        var len = dx * dx + dy * dy;
+        var r = ((this.x - A.x) * dx + (this.y - A.y) * dy) / len;
         return r;
     }
 
     // 点到线段最短距离的点,靠A更近
-    this.ClosestPoint = function (A, B) {
-        factor = this.ProjectionFactor(A, B)
+    this.closestPoint = function (A, B) {
+        var factor = this.projectionFactor(A, B);
         if (factor > 0 && factor < 1) {
-            return this.ProjectPoint(A, B);
+            return this.projectPoint(A, B);
         }
-        dist0 = this.Distance(A);
-        dist1 = this.Distance(B);
+        var dist0 = this.distance(A);
+        var dist1 = this.distance(B);
         if (dist0 < dist1) {
             return A;
         } else {
@@ -95,8 +96,8 @@ export function Point(x, y) {
     }
 
     //点在线段A-B的右侧?
-    this.IsOnRight = function (A, B) {
-        res = (B.X - A.X) * (this.Y - A.Y) - (this.X - A.X) * (B.Y - A.Y);
+    this.isOnRight = function (A, B) {
+        var res = (B.x - A.x) * (this.y - A.y) - (this.x - A.x) * (B.y - A.y);
         return res < 0;
     }
 }
