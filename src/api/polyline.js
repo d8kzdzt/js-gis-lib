@@ -1,5 +1,5 @@
 // 折线类，构造时传入Point[]
-function Polyline(ptArray) {
+export function Polyline(ptArray) {
     // 表示一个极大值
     this.MaxValue = 99999999999999999999999999999999999999999999999999999999999999;
     // 折线的点集

@@ -1,5 +1,4 @@
-
-function Point(x, y) {
+export function Point(x, y) {
     this.X = x;
     this.Y = y;
     this.Equals = function (b) {
