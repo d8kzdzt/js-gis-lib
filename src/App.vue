@@ -8,8 +8,8 @@
       输入指定点P2
       <span>X2:</span><el-input-number v-model="x2" style="width:150px" />
       <span>Y2:</span><el-input-number v-model="y2" style="width:150px"/>
-      <el-button type="primary" @click="GenData" style="margin-left:20px;">生成数据</el-button>
-      <el-button type="primary" @click="RunDemo" style="margin-left:20px;">调用线路规划</el-button>
+      <el-button type="primary" @click="GenData" style="margin-left:20px;" >生成数据</el-button>
+      <el-button type="primary" @click="RunDemo" style="margin-left:20px;" :disabled="ptArray.length == 0">调用线路规划</el-button>
     </div>
     <el-input type="textarea" :rows="10" :value="desdata | tostring" readonly></el-input>
   </div>
@@ -50,9 +50,11 @@ export default {
       });
     },
     RunDemo() {
+      // 生成参数,折线pl，p1,p2
       var pl = new Polyline(this.ptArray);
       var p1 = new Point(this.x1,this.y1);
       var p2 = new Point(this.x2,this.y2);
+      // 调用并输出
       this.desdata = GetPointsInPolylineBySpecificRange(pl,p1,p2);
     }
   }
