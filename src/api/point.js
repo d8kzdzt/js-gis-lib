@@ -1,5 +1,5 @@
 // gis库中点相关操作封装
-export function Point(x,y) {
+export function Point(x, y) {
     this.x = x;
     this.y = y;
     this.equals = function (b) {
@@ -67,10 +67,10 @@ export function Point(x,y) {
 
     // 求点在线段上的投影影子
     this.projectionFactor = function (A, B) {
-        if (this === A) {
+        if (this.equals(A)) {
             return 0.0;
         }
-        if (this === B) {
+        if (this.equals(B)) {
             return 1.0;
         }
         var dx = B.x - A.x;
