@@ -1,16 +1,11 @@
 <template>
   <div id="app">
-    <el-input type="textarea" :rows="10" placeholder="点击生成数据按钮" v-model="srcData" />
+    <el-input type="textarea" :rows="10" placeholder="点击生成数据按钮" v-model="srcData" style="font-size:16px;"/>
     <div>
-      输入指定点P1
-      <span>X1:</span>
-      <el-input-number v-model="x1" style="width:150px" />
-      <span>Y1:</span>
-      <el-input-number v-model="y1" style="width:150px;margin-right:30px;" />输入指定点P2
-      <span>X2:</span>
-      <el-input-number v-model="x2" style="width:150px" />
-      <span>Y2:</span>
-      <el-input-number v-model="y2" style="width:150px" />
+      输入指定点P1(x,y)
+      <el-input v-model="p1" style="width:250px" />
+      输入指定点P2(x,y)
+      <el-input v-model="p2" style="width:250px" />
       <el-button type="primary" @click="GenData" style="margin-left:20px;">生成数据</el-button>
       <el-button
         type="primary"
@@ -19,7 +14,7 @@
         :disabled="srcData.length == 0"
       >调用线路规划</el-button>
     </div>
-    <el-input type="textarea" :rows="10" :value="tostring(desdata)" readonly></el-input>
+    <el-input type="textarea" :rows="10" :value="tostring(desdata)" readonly style="font-size:16px;"></el-input>
   </div>
 </template>
 
@@ -35,10 +30,8 @@ export default {
       // 输入参数之组成Polyline的点集合
       srcData: "",
       desdata: [],
-      x1: 0,
-      y1: 0,
-      x2: 0,
-      y2: 0
+      p1:'',
+      p2:''
     };
   },
   filters: {},
@@ -46,7 +39,7 @@ export default {
     tostring(pts) {
       var ary = [];
       pts.forEach(p => {
-        ary.push(`(${p.x},${p.y})`);
+        ary.push(`${p.x},${p.y}`);
       });
       return ary.join(";");
     },
@@ -54,18 +47,20 @@ export default {
       this.srcData = this.tostring(GenerateData());
     },
     RunDemo() {
-      // 生成参数,折线pl，p1,p2
-      var pl = new Polyline(this.parse2PtArray(this.srcData));
-      var p1 = new Point(this.x1, this.y1);
-      var p2 = new Point(this.x2, this.y2);
+      // 生成参数,折线polyline,pStart,pEnd
+      var 折线polyline = new Polyline(this.parse2PtArray(this.srcData));
+      var p1Array = this.p1.split(',');
+      var p2Array = this.p2.split(',');
+      var pStart = new Point(parseFloat(p1Array[0]), parseFloat(p1Array[1]));
+      var pEnd = new Point(parseFloat(p2Array[0]), parseFloat(p1Array[1]));
       // 调用并输出
-      this.desdata = GetPointsInPolylineBySpecificRange(pl, p1, p2);
+      this.desdata = GetPointsInPolylineBySpecificRange(折线polyline, pStart, pEnd);
     },
     // 将字符串解析为点数组
     parse2PtArray(data) {
       var pts = [];
       data.split(";").forEach(item => {
-        var tmp = item.slice(1, item.length - 1).split(",");
+        var tmp = item.split(",");
         pts.push(new Point(parseFloat(tmp[0]), parseFloat(tmp[1])));
       });
       return pts;

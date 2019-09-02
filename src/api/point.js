@@ -3,7 +3,7 @@ export function Point(x, y) {
     this.x = x;
     this.y = y;
     this.equals = function (b) {
-        return Math.abs(this.x - b.x) < 0.000001 && Math.abs(this.y - b.y) < 0.000001;
+        return Math.abs(this.x - b.x) < 0.00000001 && Math.abs(this.y - b.y) < 0.00000001;
     }
 
     //返回两点之间的距离
