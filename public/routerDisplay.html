@@ -35,7 +35,7 @@
 	<script>
 		!function () {
 			var infoWindow, map, level = 14,
-				center = { lng: 118.762727, lat: 31.987446 },
+				center = {lng:118.798999,lat:32.025391},
 				features = [
 					{
 						type: "Polyline", name: "原始路线", desc: "原始路线", strokeWeight: 10, strokeColor: "#19A4EB", strokeOpacity: 0.8,
@@ -47,9 +47,8 @@
 					}];
 
 			function loadFeatures() {
-				var source = getQueryString('source').split(';');
-				var des = getQueryString('des').split(';');
-				
+				var source = localStorage.getItem("source").split(';');
+				var des = localStorage.getItem("des").split(';');
 				//解析gps
 				for(var i =0;i<source.length;i++)
 				{
@@ -58,6 +57,10 @@
 						lng:parseFloat(gpsNode[0]),
 						lat:parseFloat(gpsNode[1])
 					});
+					// 想要跳转到线路的中心区域，未生效
+					// if( i > 0.5*source.length-1 && i < 0.5*source.length+1){
+					// 	map.center = new AMap.LngLat(parseFloat(gpsNode[0]), parseFloat(gpsNode[1]));
+					// }
 				}
 				for(var i =0;i<des.length;i++)
 				{
