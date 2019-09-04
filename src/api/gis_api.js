@@ -7,6 +7,12 @@ export function GetPointsInPolylineBySpecificRange(polyline, pStart, pEnd) {
 	// 分别求pStart,pEnd在折线polyline上的投影位置数据
 	var pStartQryRes = polyline.queryPointAndDistance(pStart);
 	var pEndQryRes = polyline.queryPointAndDistance(pEnd);
+	// 防止求出的范围是[20,5]这种从大到小的,将其转为[5,20]则可顺利给出范围内的点
+	if(pStartQryRes.lastPxIdx > pEndQryRes.lastPxIdx){
+		var tmp = pStartQryRes;
+		pStartQryRes = pEndQryRes;
+		pEndQryRes = tmp;
+	}
 	//将pStart加入(minDistPoint(最短距离点)即投影点)
 	ptInRange.push(pStartQryRes.minDistPoint);
 	//lastPxIdx即投影点所在线段的起点下标
